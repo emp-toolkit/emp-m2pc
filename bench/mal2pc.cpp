@@ -1,6 +1,8 @@
 #include <emp-tool/emp-tool.h>
 #include "bench/bench_mal2pc.h"
 #include <iomanip>
+const string circuit_file_location = macro_xstr(EMP_CIRCUIT_PATH);
+
 static CircuitFile *cf;
 static int len1;
 static int len2;
@@ -22,8 +24,8 @@ void bench_sha1() {
 	len1 = 256;
 	len2 = 256;
 	len3 = 160;
-	char file[] = "circuits/files/sha-1.txt";
-	cf = new CircuitFile(file);
+	string file = circuit_file_location+"/sha-1.txt";
+	cf = new CircuitFile(file.c_str());
 	void * f = (void *)&compute2;
 	cout <<bench_mal2pc_all_online<>(f, len1, len2, len3, io, runs, party)<<"\t";
 	double t[3];
@@ -36,8 +38,8 @@ void bench_sha2() {
 	len1 = 256;
 	len2 = 256;
 	len3 = 256;
-	char file[] = "circuits/files/sha-256.txt";
-	cf = new CircuitFile(file);
+	string file = circuit_file_location+"/sha-256.txt";
+	cf = new CircuitFile(file.c_str());
 	void * f = (void *)&compute2;
 	cout <<bench_mal2pc_all_online<>(f, len1, len2, len3, io, runs, party)<<"\t";
 	double t[3];
@@ -50,8 +52,8 @@ void bench_aes() {
 	len1 = 128;
 	len2 = 128;
 	len3 = 128;
-	char file[] = "circuits/files/AES-non-expanded.txt";
-	cf = new CircuitFile(file);
+	string file = circuit_file_location+"/AES-non-expanded.txt";
+	cf = new CircuitFile(file.c_str());
 	void * f = (void *)&compute;
 	cout <<bench_mal2pc_all_online<>(f, len1, len2, len3, io, runs, party)<<"\t";
 	double t[3];
@@ -64,8 +66,9 @@ void bench_add() {
 	len1 = 32;
 	len2 = 32;
 	len3 = 33;
-	char file[] = "circuits/files/adder_32bit.txt";
-	cf = new CircuitFile(file);
+
+	string file = circuit_file_location+"/adder_32bit.txt";
+	cf = new CircuitFile(file.c_str());
 	void * f = (void *)&compute;
 	cout <<bench_mal2pc_all_online<>(f, len1, len2, len3, io, runs, party)<<"\t";
 	double t[3];
