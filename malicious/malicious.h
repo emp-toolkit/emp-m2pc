@@ -13,7 +13,7 @@ class Malicious2PC { public:
 	int n1, n2, n3;
 	PRG prg, *prgs;
 	PRP prp;
-	OTExtension * ot;
+	MOTExtension * ot;
 	Commitment commitment;
 	const int ssp = 40;
 	XorTree<> * xortree;
@@ -52,7 +52,7 @@ class Malicious2PC { public:
 		seedB = new block*[2];
 		seedB[0] = new block[n2]; 
 		seedB[1] = new block[n2];
-		ot = new OTExtension(io, 40);
+		ot = new MOTExtension(io);
 		prgs = new PRG[ssp];
 		A = new block[ssp*n1];
 		R = new block[n1*ssp];

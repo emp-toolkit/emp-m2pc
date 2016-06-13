@@ -39,8 +39,8 @@ int main2(int argc, char** argv) {
 	parse_party_and_port(argv, &party, &port);
 	NetIO * io = new NetIO(party==ALICE ? nullptr:SERVER_IP, port);
 	XorTree<40, 192> tree(65535, 40);
-	OTExtension * ot = new OTExtension(io, 40);
-	double t2 = test_ot<OTExtension>(io, party, tree.output_size(), ot);
+	MOTExtension * ot = new MOTExtension(io);
+	double t2 = test_ot<MOTExtension>(io, party, tree.output_size(), ot);
 	block* blocks = new block[tree.input_size()];
 	block* blocks2 = new block[tree.output_size()];
 	double t1 = timeStamp();
@@ -72,9 +72,9 @@ int main(int argc, char** argv) {
 
 	NetIO * io = new NetIO(party==ALICE ? nullptr:SERVER_IP, port);
 	for(int i = 0; i<4; ++i) {
-		OTExtension * ot = new OTExtension(io, 40);
+		MOTExtension * ot = new MOTExtension(io, 40);
 		io->set_nodelay();
-		double t3 = test_ot<OTExtension>(io, party, 2*n[i], ot);
+		double t3 = test_ot<MOTExtension>(io, party, 2*n[i], ot);
 		cout << n[i]<<"\t"<<t3<<endl;
 	}
 	delete io;
