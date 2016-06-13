@@ -7,7 +7,7 @@
 2. Install [emp-tool](https://github.com/emp-toolkit/emp-tool).
 3. Install [emp-ot](https://github.com/emp-toolkit/emp-ot).
 4. git clone https://github.com/emp-toolkit/emp-m2pc.git
-5. cd emp-m2pc && cmake . && sudo make install
+5. cd emp-m2pc && cmake . && make 
 
 ## Test
 
