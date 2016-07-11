@@ -29,6 +29,8 @@ double bench_mal2pc_all_online(void * f, uint64_t len1, uint64_t len2, uint64_t 
 		t += (timeStamp() - t1);
 		assert(!res);
 	}
+	delete[] in2;
+	delete[] out;
 	return t/TIME;
 }
 

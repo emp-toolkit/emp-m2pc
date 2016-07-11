@@ -18,6 +18,7 @@ void compute2(Bit * res, Bit * in, Bit * in2) {
 	memcpy(tin, in, len1*16);
 	memcpy(tin+len1, in2, len2*16);
 	cf->compute((block*)res, (block*)tin, nullptr);
+	delete[] tin;
 }
 
 void bench_sha1() {

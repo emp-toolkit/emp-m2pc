@@ -71,6 +71,7 @@ class Malicious2PC { public:
 	~Malicious2PC() {
 		delete[] B;
 		delete[] C;
+		delete[] D;
 		delete[] s;
 		delete[] t;
 		delete[] A;
@@ -460,6 +461,7 @@ class Malicious2PC { public:
 		}
 
 		delete [] tmp;
+		delete [] tmp2;
 	}
 
 	bool bobInputBob(bool * b) {
