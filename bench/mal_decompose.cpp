@@ -81,4 +81,3 @@ int main(int argc, char** argv) {
 	delete[] output;
 	delete io;
 }
-

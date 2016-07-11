@@ -11,7 +11,7 @@ FIND_PACKAGE(emp-ot)
 INCLUDE_DIRECTORIES(${EMP-OT_INCLUDE_DIRS})
 
 set (CMAKE_C_FLAGS "-pthread -Wall -march=native -O3 -maes")
-#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pg -ggdb")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pg -ggdb")
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++0x")
 
 macro (add_test _name)
@@ -28,10 +28,6 @@ macro (add_example _name)
 	add_executable("example_${_name}" "example/${_name}.cpp" ${basics})
 	target_link_libraries("example_${_name}"  relic  ${OPENSSL_LIBRARIES} gmp ${EMP-TOOL_LIBRARIES})
 endmacro()
-
-
-set(basics
-)
 
 add_test (mal)
 

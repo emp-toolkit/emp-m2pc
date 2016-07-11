@@ -46,14 +46,14 @@ int main(int argc, char** argv) {
 	Malicious2PC<RTCktOpt::off> mal(io, party, l1,l2,l3);
 	double t1 = wallClock();
 	if(party == ALICE) {
-		mal.alice_offline(f);
-		mal.alice_online(f, in);
-	//		mal.alice_run(f, in);
+		//mal.alice_offline(f);
+		//mal.alice_online(f, in);
+			mal.alice_run(f, in);
 	}else {
-		cout <<"offline "<<mal.bob_offline(f)<<endl;
-		mal.bob_preload();
-		cout <<"online "<<mal.bob_online(f, in, output)<<endl;
-	//		cout << "run"<<mal.bob_run(f, in, output)<<endl;
+		//cout <<"offline "<<mal.bob_offline(f)<<endl;
+		//mal.bob_preload();
+		//cout <<"online "<<mal.bob_online(f, in, output)<<endl;
+			cout << "run"<<mal.bob_run(f, in, output)<<endl;
 
 #ifndef AES
 		string a = hex_to_binary(string(out3));

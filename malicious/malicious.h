@@ -14,6 +14,7 @@ class Malicious2PC { public:
 	PRG prg, *prgs;
 	PRP prp;
 	MOTExtension * ot;
+	COMMITTING_MOTExtension * cot;
 	Commitment commitment;
 	const int ssp = 40;
 	XorTree<> * xortree;
@@ -53,6 +54,7 @@ class Malicious2PC { public:
 		seedB[0] = new block[n2]; 
 		seedB[1] = new block[n2];
 		ot = new MOTExtension(io);
+		cot = new COMMITTING_MOTExtension(io);
 		prgs = new PRG[ssp];
 		A = new block[ssp*n1];
 		R = new block[n1*ssp];
@@ -75,6 +77,7 @@ class Malicious2PC { public:
 		delete[] R;
 		delete[] gc_delta;
 		delete ot;
+		delete cot;
 		delete[] prgs;
 		delete[] seedB[0];
 		delete[] seedB[1];
@@ -159,14 +162,15 @@ class Malicious2PC { public:
 		prg.random_block(seed, ssp);
 		prg.random_block(seedB[0], n2);
 		prg.random_block(seedB[1], n2);
-		block * b0 = new block[ssp+ot->l];
-		block * b1 = new block[ssp+ot->l];
+		block * b0 = new block[ssp+2*ot->l];
+		block * b1 = new block[ssp+2*ot->l];
 		memcpy(b0, seed, ssp*sizeof(block));
 		memcpy(b1, key, ssp*sizeof(block));
-		prg.random_block(b0+ssp, ot->l);
-		prg.random_block(b1+ssp, ot->l);
-		ot->send(b0, b1, ssp+ot->l);
+		prg.random_block(b0+ssp, 2*ot->l);
+		prg.random_block(b1+ssp, 2*ot->l);
+		ot->send(b0, b1, ssp+2*ot->l);
 		ot->setup_recv(b0+ssp, b1+ssp);
+		cot->setup_recv(b0+ssp+ot->l, b1+ssp+ot->l);
 		for(int j = 0; j < ssp; ++j) {
 			prgs[j].reseed(&seed[j], PRF_OTHER);
 			prgs[j].random_block(&gc_delta[j], 1);
@@ -218,15 +222,16 @@ class Malicious2PC { public:
 		eb_t hTbl[EB_TABLE_MAX];
 		io->send_eb(&h, 1);
 		eb_mul_pre(hTbl, h);
-		block * bl = new block[ssp+ot->l];
-		bool* bools = new bool[ssp+ot->l];
+		block * bl = new block[ssp+2*ot->l];
+		bool* bools = new bool[ssp+2*ot->l];
 		E = new bool[ssp];
-		prg.random_bool(bools, ssp+ot->l);
+		prg.random_bool(bools, ssp+2*ot->l);
 		memcpy(E, bools, ssp);
 
-		ot->recv(bl, bools, ssp+ot->l);
+		ot->recv(bl, bools, ssp+2*ot->l);
 		memcpy(key, bl, ssp*sizeof(block));
 		ot->setup_send(bl+ssp, bools+ssp);
+		cot->setup_send(bl+ssp+ot->l, bools+ssp+ot->l);
 		for(int j = 0; j < ssp; ++j) {
 			if(!E[j]) {
 				prgs[j].reseed(&key[j], PRF_OTHER);
@@ -501,12 +506,12 @@ class Malicious2PC { public:
 		block * X = new block[n1+ot->l];
 		block * tmp = new block[n1];
 		uint8_t * permute = new uint8_t[n1];
-		bool *b_ot = new bool[n1 + ot->l];
-		memcpy(b_ot, b, n1);
-		prg.random_bool(b_ot+n1, ot->l);
+		bool *b_ot = new bool[ot->l];
+		prg.random_bool(b_ot, ot->l);
 
-		ot->recv(X, b_ot, n1+ot->l);
-		ot->setup_send(X+n1, b_ot+n1);
+		cot->recv(X, b, n1);
+		ot->recv(X+n1, b_ot, ot->l);
+		ot->setup_send(X+n1, b_ot);
 
 		for(int j = 0; j < ssp; ++j) {
 			io->set_key(&key[j]);
@@ -526,10 +531,8 @@ class Malicious2PC { public:
 			io->send_block_enc(tmp, n1);
 		}
 
-		block l;
-		io->recv_block(&l, 1);
-		PRG prg2(&l);
-		prg2.random_block(X, n1);
+		cot->open(tmp, n1);
+		xorBlocks_arr(X, X, tmp, n1);	
 
 		block T[2];
 		block out[2][2];
@@ -563,13 +566,12 @@ class Malicious2PC { public:
 		block * tmp = new block[n1];
 		bool cheat = false;
 		prg.random_block(X0, n1+ot->l);
-		prg.random_block(X1+n1, ot->l);
-		block l;prg.random_block(&l, 1);
-		PRG prg2(&l);
-		prg2.random_block(X0xorX1, n1);
-		xorBlocks_arr(X1, X0xorX1, X0, n1);
-		ot->send(X0, X1, n1+ot->l);
+		prg.random_block(X1, n1+ot->l);
+		xorBlocks_arr(X0xorX1, X0, X1, n1);
+		cot->send(X0, X1, n1);
+		ot->send(X0+n1, X1+n1, ot->l);
 		ot->setup_recv(X0+n1, X1+n1);
+
 		for(int j = 0; j < ssp; ++j) {
 			if(!E[j]) {
 				io->set_key(nullptr);
@@ -581,7 +583,7 @@ class Malicious2PC { public:
 				io->recv_block_enc(&A[j*n1], n1);
 			}
 		}
-		io->send_block(&l, 1);
+		cot->open();
 
 		uint8_t * permute = new uint8_t[n1];
 		block T[2];
