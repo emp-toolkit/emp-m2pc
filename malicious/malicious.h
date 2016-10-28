@@ -13,8 +13,8 @@ class Malicious2PC { public:
 	int n1, n2, n3;
 	PRG prg, *prgs;
 	PRP prp;
-	MOTExtension2 * ot;
-	COMMITTING_MOTExtension2 * cot;
+	MOTExtension * ot;
+	MOTExtension * cot;
 	Commitment commitment;
 	const int ssp = 40;
 	XorTree<> * xortree;
@@ -53,8 +53,8 @@ class Malicious2PC { public:
 		seedB = new block*[2];
 		seedB[0] = new block[n2]; 
 		seedB[1] = new block[n2];
-		ot = new MOTExtension2(io);
-		cot = new COMMITTING_MOTExtension2(io);
+		ot = new MOTExtension(io);
+		cot = new MOTExtension(io, true);
 		prgs = new PRG[ssp];
 		A = new block[ssp*n1];
 		R = new block[n1*ssp];
@@ -533,7 +533,7 @@ class Malicious2PC { public:
 			io->send_block_enc(tmp, n1);
 		}
 
-		cot->open(tmp, n1);
+		cot->open(tmp, b, n1);
 		xorBlocks_arr(X, X, tmp, n1);	
 
 		block T[2];
