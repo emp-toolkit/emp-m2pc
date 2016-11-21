@@ -30,8 +30,6 @@ macro (add_example _name)
 endmacro()
 
 add_test (mal)
-add_test (vot)
-add_test (kot)
 
 add_bench (mal2pc)
 add_bench (mal2pc_other)
