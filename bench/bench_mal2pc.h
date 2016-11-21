@@ -1,4 +1,4 @@
-#include <emp-tool/emp-tool.h>
+#include <emp-tool>
 #include "malicious/malicious.h"
 #include <string>
 using namespace std;
