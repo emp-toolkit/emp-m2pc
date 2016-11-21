@@ -1,5 +1,5 @@
 #include <emp-tool>
-#include "malicious/malicious2.h"
+#include "malicious/malicious.h"
 #define AES
 
 const string circuit_file_location = macro_xstr(EMP_CIRCUIT_PATH);
