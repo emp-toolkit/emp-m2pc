@@ -11,7 +11,7 @@ FIND_PACKAGE(emp-ot)
 INCLUDE_DIRECTORIES(${EMP-OT_INCLUDE_DIRS})
 
 set (CMAKE_C_FLAGS "-pthread -Wall -march=native -O3 -maes")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pg -ggdb")
+#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pg -ggdb")
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++0x")
 
 macro (add_test _name)
@@ -30,6 +30,8 @@ macro (add_example _name)
 endmacro()
 
 add_test (mal)
+add_test (vot)
+add_test (kot)
 
 add_bench (mal2pc)
 add_bench (mal2pc_other)

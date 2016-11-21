@@ -1,5 +1,5 @@
-#include <emp-ot/emp-ot.h>
-#include <emp-tool/emp-tool.h>
+#include <emp-ot>
+#include <emp-tool>
 #include "malicious/xor_tree_naive.h"
 #include <iostream>
 using namespace std;
