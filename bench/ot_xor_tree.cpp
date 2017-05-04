@@ -3,10 +3,10 @@
 #include "malicious/xor_tree_naive.h"
 #include <iostream>
 using namespace std;
-template<typename T>
-double test_ot(NetIO * io, int party, int length, T* ot = nullptr, int TIME = 10) {
+template<typename IO, template<typename> typename T>
+double test_ot(IO * io, int party, int length, T<IO>* ot = nullptr, int TIME = 10) {
 	if(ot == nullptr) 
-		ot = new T(io);
+		ot = new T<IO>(io);
 	block *b0 = new block[length], *b1 = new block[length], *r = new block[length];
 	PRG prg(fix_key);
 	prg.random_block(b0, length);
@@ -39,8 +39,8 @@ int main2(int argc, char** argv) {
 	parse_party_and_port(argv, &party, &port);
 	NetIO * io = new NetIO(party==ALICE ? nullptr:SERVER_IP, port);
 	XorTree<40, 192> tree(65535, 40);
-	MOTExtension * ot = new MOTExtension(io);
-	double t2 = test_ot<MOTExtension>(io, party, tree.output_size(), ot);
+	MOTExtension<NetIO> * ot = new MOTExtension<NetIO>(io);
+	double t2 = test_ot<NetIO, MOTExtension>(io, party, tree.output_size(), ot);
 	block* blocks = new block[tree.input_size()];
 	block* blocks2 = new block[tree.output_size()];
 	double t1 = timeStamp();
@@ -72,9 +72,9 @@ int main(int argc, char** argv) {
 
 	NetIO * io = new NetIO(party==ALICE ? nullptr:SERVER_IP, port);
 	for(int i = 0; i<4; ++i) {
-		MOTExtension * ot = new MOTExtension(io, 40);
+		MOTExtension<NetIO> * ot = new MOTExtension<NetIO>(io, 40);
 		io->set_nodelay();
-		double t3 = test_ot<MOTExtension>(io, party, 2*n[i], ot);
+		double t3 = test_ot<NetIO, MOTExtension>(io, party, 2*n[i], ot);
 		cout << n[i]<<"\t"<<t3<<endl;
 	}
 	delete io;

@@ -3,18 +3,18 @@
 #include <emp-tool>
 #include <emp-ot>
 
-template<RTCktOpt rt = RTCktOpt::off>
+template<typename IO, RTCktOpt rt = RTCktOpt::off>
 class Malicious2PC { public:
 	string GC_FILE = "GC_FILE";
-	NetIO * io;
+	IO * io;
 	FileIO * fio;
 	MemIO * mio;
 	int party;
 	int n1, n2, n3;
 	PRG prg, *prgs;
 	PRP prp;
-	MOTExtension * ot;
-	MOTExtension * cot;
+	MOTExtension<IO> * ot;
+	MOTExtension<IO> * cot;
 	Commitment commitment;
 	const int ssp = 40;
 	XorTree<> * xortree;
@@ -40,7 +40,7 @@ class Malicious2PC { public:
 	eb_t *C, *D, g1, h1;
 	bn_t bn_r;
 	eb_t g1Tbl[RELIC_EB_TABLE_MAX];
-	Malicious2PC(NetIO * io, int party, int n1, int _n2, int n3) {
+	Malicious2PC(IO * io, int party, int n1, int _n2, int n3) {
 		initialize_relic();
 		this->n1 = n1;
 		this->n3 = n3;
@@ -53,8 +53,8 @@ class Malicious2PC { public:
 		seedB = new block*[2];
 		seedB[0] = new block[n2]; 
 		seedB[1] = new block[n2];
-		ot = new MOTExtension(io);
-		cot = new MOTExtension(io, true);
+		ot = new MOTExtension<IO>(io);
+		cot = new MOTExtension<IO>(io, true);
 		prgs = new PRG[ssp];
 		A = new block[ssp*n1];
 		R = new block[n1*ssp];
@@ -296,7 +296,7 @@ class Malicious2PC { public:
 		for(int j = 0; j < ssp; ++j) {
 			for(int i = 0; i < n2; ++i)
 				B_loc[i] = B[i*ssp+j];
-			HalfGateGen<NetIO, rt> gc(io);
+			HalfGateGen<IO, rt> gc(io);
 			gc.set_delta(gc_delta[j]);
 			local_gc = &gc;
 			xortree->circuit(Bp, B_loc);
@@ -354,7 +354,7 @@ class Malicious2PC { public:
 				io->recv_data(T_dgst[j], 20);
 			}
 			else {
-				HalfGateEva<NetIO, rt> gc(io);
+				HalfGateEva<IO, rt> gc(io);
 				gc.set_file_io(fio);
 				local_gc = &gc;
 
@@ -644,7 +644,7 @@ class Malicious2PC { public:
 		for(int j = 0; j < ssp; ++j) {
 			for(int i = 0; i < n2; ++i)
 				B_loc[i] = B[i*ssp+j];
-			HalfGateGen<NetIO, rt> gc(io);
+			HalfGateGen<IO, rt> gc(io);
 			gc.set_delta(gc_delta[j]);
 			local_gc = &gc;
 			xortree->circuit(Bp, B_loc);
@@ -703,7 +703,7 @@ class Malicious2PC { public:
 				io->recv_data(T_dgst[j], 20);
 			}
 			else {
-				HalfGateEva<NetIO,rt> gc(io);
+				HalfGateEva<IO,rt> gc(io);
 				local_gc = &gc;
 				xortree->circuit(Bp, B_loc);
 				run_function(f, Z, &A[j*n1], Bp);

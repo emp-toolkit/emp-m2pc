@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
 	for(int i = 0; i < l1; ++i)
 		in[i] = true;//(i%2 == 0);
 	void * f = (void*)(compute);
-	Malicious2PC<RTCktOpt::off> mal(io, party, l1,l2,l3);
+	Malicious2PC<NetIO, RTCktOpt::off> mal(io, party, l1,l2,l3);
 	double t1 = wallClock();
 	if(party == ALICE) {
 			mal.alice_run(f, in);
