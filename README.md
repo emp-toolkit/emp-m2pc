@@ -1,4 +1,4 @@
-# emp-m2pc
+# emp-m2pc[![Build Status](https://travis-ci.org/emp-toolkit/emp-m2pc.svg?branch=master)](https://travis-ci.org/emp-toolkit/emp-m2pc)
 <img src="https://raw.githubusercontent.com/emp-toolkit/emp-readme/master/art/logo-full.jpg" width=300px/>
 
 ## Installation
