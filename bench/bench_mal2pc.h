@@ -18,7 +18,7 @@ double bench_mal2pc_all_online(void * f, uint64_t len1, uint64_t len2, uint64_t 
 
 	for(uint64_t k = 0; k < TIME; ++k) {
 		io->sync();
-		double t1 = timeStamp();
+		auto start = clock_start();
 		Malicious2PC <NetIO, rt> mal(io, party, len1, len2, len3);
 		bool res = false;
 		if(party == ALICE) {
@@ -26,7 +26,7 @@ double bench_mal2pc_all_online(void * f, uint64_t len1, uint64_t len2, uint64_t 
 		} else {
 			res = mal.bob_run(f, in1, out);
 		}
-		t += (timeStamp() - t1);
+		t += time_from(start);
 		assert(!res);
 	}
 	delete[] in2;
@@ -51,25 +51,25 @@ void bench_mal2pc_with_offline(double t[3], void * f, uint64_t len1, uint64_t le
 		bool res = false;
 		bool res2 = false;
 		io->sync();
-		double t1 = timeStamp();
+		auto start = clock_start();
 		Malicious2PC<NetIO, RTCktOpt::off> mal(io, party, len1, len2, len3);
 		if(party == ALICE) {
 			mal.alice_offline(f);
-			t[0] += (timeStamp() - t1);
+			t[0] += time_from(start);
 			io->sync();
-			t1 = timeStamp();
+			start = clock_start();
 			mal.alice_online(f, in1);
-			t[2] += (timeStamp() - t1);
+			t[2] += time_from(start);
 		} else {
 			res = mal.bob_offline(f);
-			t[0] += (timeStamp() - t1);
-			t1 = timeStamp();
+			t[0] += time_from(start);
+			start = clock_start();
 			mal.bob_preload();
-			t[1] += (timeStamp() - t1);
+			t[1] += time_from(start);
 			io->sync();
-			t1 = timeStamp();
+			start = clock_start();
 			res2 = mal.bob_online(f, in2, out);
-			t[2] += (timeStamp() - t1);
+			t[2] += time_from(start);
 		}
 		assert(!res);
 		assert(!res2);

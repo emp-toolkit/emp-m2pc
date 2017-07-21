@@ -23,7 +23,7 @@ void compute(Bit * t, Bit * in, Bit * in2) {
 int main(int argc, char** argv) {
 	int port, party;
 	parse_party_and_port(argv, &party, &port);
-	NetIO * io = new NetIO(party==ALICE ? nullptr:SERVER_IP, port);
+	NetIO * io = new NetIO(party==ALICE ? nullptr:"127.0.0.1", port);
 
 	void * f = (void *)&compute;
 #ifdef LEN1

@@ -9,8 +9,8 @@ int main(int argc, char** argv) {
 	block * blocks = new block[xortree.output_size()];
 	block * blocks2 = new block[xortree.input_size()];
 	prg.random_block(blocks, xortree.output_size());
-	double t1 = timeStamp();
+	auto start = clock_start();
 	for(int i = 0; i < 20; ++i)
 		xortree.circuit(blocks2, blocks);
-	cout << (timeStamp()-t1)/20<<endl;
+	cout << time_from(start)/20<<endl;
 }

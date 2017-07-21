@@ -25,13 +25,13 @@ int main(int argc, char** argv) {
 		in[i] = true;//(i%2 == 0);
 	void * f = (void*)(compute);
 	Malicious2PC<NetIO, RTCktOpt::off> mal(io, party, l1,l2,l3);
-	double t1 = wallClock();
+	auto start = clock_start();
 	if(party == ALICE) {
 			mal.alice_run(f, in);
 	}else {
 			mal.bob_run(f, in, output);
 	}
-	double t2 = wallClock() - t1;
+	double t2 = time_from(start);
 	cout << "time "<<t2<<endl;
 	delete[] output;
 	delete io;

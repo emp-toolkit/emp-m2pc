@@ -80,7 +80,7 @@ void bench_add() {
 
 int main(int argc, char** argv) {
 	parse_party_and_port(argv, &party, &port);
-	io = new NetIO(party==ALICE ? nullptr:SERVER_IP, port);
+	io = new NetIO(party==ALICE ? nullptr:"127.0.0.1", port);
 	cout << "ADD\t"; bench_add();
 	cout <<endl;
 	cout << "AES\t"; bench_aes();

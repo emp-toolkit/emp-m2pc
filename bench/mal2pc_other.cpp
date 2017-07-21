@@ -62,7 +62,7 @@ void bench_sort(int n) {
 
 int main(int argc, char** argv) {
 	parse_party_and_port(argv, &party, &port);
-	io = new NetIO(party==ALICE ? nullptr:SERVER_IP, port);
+	io = new NetIO(party==ALICE ? nullptr:"127.0.0.1", port);
 #ifdef COUNT_IO
 		io->counter = 0;
 #endif

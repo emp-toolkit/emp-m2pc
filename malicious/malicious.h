@@ -456,7 +456,7 @@ class Malicious2PC { public:
 				tmp[j] = seedB[1][i];
 			prp.Hn(tmp, tmp, i, ssp, tmp2);
 			xorBlocks_arr(tmp, tmp, &B[i*ssp], ssp);
-			xorBlocks_arr2(tmp, tmp, gc_delta, ssp);
+			xorBlocks_arr(tmp, tmp, gc_delta, ssp);
 			io->send_block(tmp, ssp);
 		}
 
