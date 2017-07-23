@@ -52,4 +52,5 @@ addons:
 
 script:
   - cmake -DCMAKE_BUILD_TYPE=Debug . && make 
-  - ./run ./bin/bench_mal2pc 12345
+  - ./run ./bin/sha1 12345
+  - ./run ./bin/sha256 12345

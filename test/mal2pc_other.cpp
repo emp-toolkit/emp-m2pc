@@ -1,6 +1,6 @@
 #include <emp-tool>
 #include "malicious/malicious.h"
-#include "bench/bench_mal2pc.h"
+#include "test/bench_mal2pc.h"
 #include <string>
 #include <iomanip>
 static int len1;

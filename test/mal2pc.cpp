@@ -1,5 +1,5 @@
 #include <emp-tool>
-#include "bench/bench_mal2pc.h"
+#include "test/bench_mal2pc.h"
 #include <iomanip>
 const string circuit_file_location = macro_xstr(EMP_CIRCUIT_PATH);
 
