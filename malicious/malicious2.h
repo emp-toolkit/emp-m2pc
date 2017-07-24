@@ -27,7 +27,7 @@ class Malicious2PC { public:
 			* Z = nullptr, (*T)[2] = nullptr, 
 			Omega, (*H)[2] = nullptr,
 			* X0 = nullptr, *X1 = nullptr,  ** scratch = nullptr;
-	const int NUM_THREADS = 1;
+	const int NUM_THREADS = 2;
 	const static int PRG_GC = 1,  PRF_R = 2, PRF_PERMUTE = 3;
 	ThreadPool *pool;
 
@@ -224,10 +224,10 @@ class Malicious2PC { public:
 
 	void setupGCAlice(void * f) {
 		vector<future<void>> res;
-		cout <<"ALICE\t"<<m128i_to_string<>(seed[0])<<endl;
-		cout <<"ALICE\t"<<m128i_to_string<>(key[0])<<endl;
 		for(int j = 0; j < G; j++) {
-			res.push_back(pool->enqueue(&Malicious2PC::garbleNhash, this, hashGC[j], seed[j], f, j, comT[j]));
+			res.push_back(pool->enqueue([this, f, j]() {
+				garbleNhash(hashGC[j], seed[j], f, j, comT[j]);
+			}));
 		}
 		for(size_t j = 0; j < res.size(); ++j)
 			res[j].get();
@@ -237,11 +237,12 @@ class Malicious2PC { public:
 
 	void setupGCBob(void * f) {
 		vector<future<void>> res;
-		cout <<"BOB\t"<<m128i_to_string<>(keyorseed[0])<<endl;
 		char (*hashGC2)[20] = new char[G][20];
 		for(int j = 0; j < G; ++j) {
 			if(!E[j]) {
-				res.push_back(pool->enqueue(&Malicious2PC::garbleNhash, this, hashGC2[j], keyorseed[j], f, j, nullptr));
+				res.push_back(pool->enqueue([this, f, j, hashGC2]() {
+					garbleNhash(hashGC2[j], keyorseed[j], f, j, nullptr);
+				}));
 			}
 		}
 		for(size_t j = 0; j < res.size(); ++j)
@@ -302,7 +303,10 @@ class Malicious2PC { public:
 		baseot_size +=ot->l;
 		block * seedB0 = new block[n2];
 		block * seedB1 = new block[n2];
-		ot->send_rot(seedB0, seedB1, n2);
+		prg.random_block(seedB0, n2);
+		prg.random_block(seedB1, n2);
+		ot->send(seedB0, seedB1, n2);
+		
 		AES_KEY aes_key;
 		for(int i = 0; i < n2; ++i) {
 			AES_set_encrypt_key(seedB0[i], &aes_key);
@@ -330,7 +334,7 @@ class Malicious2PC { public:
 		ot->setup_recv(baseot_seed0+baseot_size, baseot_seed1+baseot_size);
 
 		baseot_size +=ot->l;
-		ot->recv_rot(seedB, xor_input, n2);
+		ot->recv(seedB, xor_input, n2);
 
 		for(int i = 0; i < n2; ++i) {
 			if (xor_input[i]) {
