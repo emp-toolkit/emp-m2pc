@@ -1,6 +1,6 @@
 #ifndef XORTREE_NAIVE_H__
 #define XORTREE_NAIVE_H__
-#include <emp-tool>
+#include <emp-tool/emp-tool.h>
 
 class XorTreeNaive{public:
 	int n, ssp,m;
