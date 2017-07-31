@@ -1,7 +1,7 @@
 #ifndef KOT_H__
 #define KOT_H__
 
-#include <emp-ot>
+#include <emp-ot/emp-ot.h>
 #include "malicious/vot.h"
 class KOT {public:
 	int ssp, l, n;

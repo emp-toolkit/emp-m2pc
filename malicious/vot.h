@@ -1,7 +1,7 @@
 #ifndef VOT_H__
 #define VOT_H__
 
-#include <emp-ot>
+#include <emp-ot/emp-ot.h>
 class VOT {public:
 	int ssp;
 	NetIO * io;

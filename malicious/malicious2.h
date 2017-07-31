@@ -1,10 +1,9 @@
 #ifndef MALICIOUS_2PC_H__
 #define MALICIOUS_2PC_H__
 #include "malicious/kot.h"
-#include <emp-tool>
-#include <emp-ot>
+#include <emp-tool/emp-tool.h>
+#include <emp-ot/emp-ot.h>
 #include <thread>
-#include "malicious/ThreadPool.h"
 template<RTCktOpt rt = RTCktOpt::on>
 class Malicious2PC { public:
 	NetIO * io;
