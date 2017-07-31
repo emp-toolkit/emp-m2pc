@@ -9,6 +9,7 @@ static int l3 = 160;
 static CircuitFile cf(file.c_str());
 void compute(Bit * res, Bit * in, Bit * in2) {
 	block * ipt = new block[512];
+	cout << file<<endl;
 	memcpy(ipt, in, l1*sizeof(block));
 	memcpy(ipt+l1, in2, l2*sizeof(block));
 	cf.compute((block*)res, (block*)ipt, nullptr);
