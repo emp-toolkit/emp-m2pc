@@ -238,22 +238,17 @@ class Malicious2PC { public:
 	void setupGCBob(void * f) {
 		vector<future<void>> res;
 		char (*hashGC2)[20] = new char[G][20];
-		for(int j = 0; j < G; ++j) {
-			if(!E[j]) {
-				res.push_back(pool->enqueue([this, f, j, hashGC2]() {
-					garbleNhash(hashGC2[j], keyorseed[j], f, j, nullptr);
-				}));
-			}
+		for(int j = 0; j < G; ++j) if(!E[j]) {
+			res.push_back(pool->enqueue([this, f, j, hashGC2]() {
+				garbleNhash(hashGC2[j], keyorseed[j], f, j, nullptr);
+			}));
 		}
 		for(size_t j = 0; j < res.size(); ++j)
 			res[j].get();
 		io->recv_data(hashGC, 20*G);
-		for(int j = 0; j < G; ++j) {
-			if(!E[j]) {
-				if(memcmp(hashGC[j], hashGC2[j], 20)!=0 ) {
-					error("cheat");
-				}
-			}
+		for(int j = 0; j < G; ++j) if(!E[j]) {
+			if(memcmp(hashGC[j], hashGC2[j], 20)!=0 )
+				error("cheat");	
 		}
 		io->recv_data(comT, 20*G);
 		delete[] hashGC2;
@@ -268,7 +263,6 @@ class Malicious2PC { public:
 		for(int i = 0; i < n2; ++i) {
 			B[i*G+j] = scratch[j][i];
 		}
-
 		HashIO hashio(io);
 		HalfGateGen<HashIO, rt> gc(&hashio);
 		gc.set_delta(gc_delta[j]);
@@ -294,7 +288,6 @@ class Malicious2PC { public:
 			T[j*n3+i][0] = xorBlocks(H0[i], Delta0[i]);
 			T[j*n3+i][1] = xorBlocks(H1[i], Delta0[i]);
 		}
-
 		Hash::hash_once(hashT, T[j*n3], sizeof(block)*2*n3);
 	}
 	void bobInputAlice() {
@@ -388,10 +381,8 @@ class Malicious2PC { public:
 			io->send_block_enc(tmp, n1);
 
 			for(int i = 0; i < n1; ++i) {
-				if(b[i])
-					tmp[i] = xorBlocks(A[j*n1+i], gc_delta[j]);
-				else
-					tmp[i] = A[j*n1+i];
+				tmp[i] = A[j*n1+i];
+				if(b[i]) tmp[i] = xorBlocks(tmp[i], gc_delta[j]);
 			}
 			io->send_block_enc(tmp, n1);
 		}
@@ -516,15 +507,12 @@ class Malicious2PC { public:
 
 		vector<future<void>> futures;
 		int s =0;
-		for(int j = 0; j < G; ++j) {
-			if (E[j]) {
-				futures.push_back(pool->enqueue(&Malicious2PC::OnlineGarble, this, s, f, j));
-				++s;
-			}
+		for(int j = 0; j < G; ++j) if (E[j]) {
+			futures.push_back(pool->enqueue(&Malicious2PC::OnlineGarble, this, s, f, j));
+			++s;
 		}
-		for(size_t j = 0; j < futures.size(); ++j) {
-			futures[j].get();//thds[j].join();
-		}
+		for(size_t j = 0; j < futures.size(); ++j)
+			futures[j].get();
 	}
 	void OnlineGarble(int id, void *f, int j) {
 		block * Bp = scratch[id]+n2;
@@ -564,48 +552,42 @@ class Malicious2PC { public:
 		bool * output_set = new bool[n3];
 		memset(output_set, false, n3);
 
-
 		io->send_data(E, G);
 		io->send_block(keyorseed, G);	
 		io->flush();
 		vector<future<void>> futures;
 		int s =0;
-
-		for(int j = 0; j < G; ++j)
-			if (E[j]) {
-				futures.push_back(pool->enqueue( &Malicious2PC::OnlineGarble, this, s, f, j));
-				++s;
-			}
-		for(size_t j = 0; j < futures.size(); ++j) {
-			futures[j].get();
+		for(int j = 0; j < G; ++j) if (E[j]) {
+			futures.push_back(pool->enqueue( &Malicious2PC::OnlineGarble, this, s, f, j));
+			++s;
 		}
+		for(size_t j = 0; j < futures.size(); ++j)
+			futures[j].get();
 
-		for(int j = 0; j < G; ++j) {
-			if (E[j]) {
-				for(int i = 0; i < n3; ++i) {
-					block result[2], result2[2];
-					memcpy(result, T[j*n3+i], sizeof(block)*2);
-					result[0] = xorBlocks(result[0], prp.H(Z[j*n3+i], i));
-					result[1] = xorBlocks(result[1], prp.H(Z[j*n3+i], i));
+		for(int j = 0; j < G; ++j) if (E[j]) {
+			for(int i = 0; i < n3; ++i) {
+				block result[2], result2[2];
+				memcpy(result, T[j*n3+i], sizeof(block)*2);
+				result[0] = xorBlocks(result[0], prp.H(Z[j*n3+i], i));
+				result[1] = xorBlocks(result[1], prp.H(Z[j*n3+i], i));
 
-					prp.H<2>(result2, result, i*2);
-					if(block_cmp(&H[i][0], &result2[0], 1)) {
-						output[i] = false;
-						if(!output_set[i])
-							recovered_delta[i] =  result[0];
-						else if(output[i] == true) {
-							Omega = xorBlocks(recovered_delta[i], result[0]);
-							omega_set = true;
-						}
+				prp.H<2>(result2, result, i*2);
+				if(block_cmp(&H[i][0], &result2[0], 1)) {
+					output[i] = false;
+					if(!output_set[i])
+						recovered_delta[i] =  result[0];
+					else if(output[i] == true) {
+						Omega = xorBlocks(recovered_delta[i], result[0]);
+						omega_set = true;
 					}
-					else if(block_cmp(&H[i][1], &result2[1], 1)) {
-						output[i] = true;
-						if(!output_set[i])
-							recovered_delta[i] =  result[1];
-						else if(output[i] == false) {
-							Omega = xorBlocks(recovered_delta[i], result[1]);
-							omega_set = true;
-						}
+				}
+				else if(block_cmp(&H[i][1], &result2[1], 1)) {
+					output[i] = true;
+					if(!output_set[i])
+						recovered_delta[i] =  result[1];
+					else if(output[i] == false) {
+						Omega = xorBlocks(recovered_delta[i], result[1]);
+						omega_set = true;
 					}
 				}
 			}
@@ -640,7 +622,6 @@ class Malicious2PC { public:
 		io->send_data(E, G);
 		io->send_block(keyorseed, G);
 		bool *omega_bool = new bool[128];
-		//		MOTExtension ot2(io), cot2(io, true);
 		block_to_bool(omega_bool, Omega);
 		cot->setup_recv(baseot_seed0+baseot_size, baseot_seed1+baseot_size);
 		baseot_size+=ot->l;
@@ -660,19 +641,17 @@ class Malicious2PC { public:
 				if(memcmp(h2, comT[j],20)!=0) {
 					error("bad T!");
 				}
-			} else {
-				if(omega_set) {
-					prgs[j].reseed(&seed[j], PRF_R);
-					prgs[j].random_block(tmp, n1);
-					for(int i = 0; i < n1; ++i) {
-						block RR[2];
-						RR[0] = xorBlocks(tmp[i], X0[i]);
-						RR[1] = xorBlocks(tmp[i], X1[i]);
-						if(block_cmp(&RR[0], &R[j*n1+i],1))
-							alice_input[i] = 0;
-						if(block_cmp(&RR[1], &R[j*n1+i],1))
-							alice_input[i] = 1;
-					}
+			} else if(omega_set) {
+				prgs[j].reseed(&seed[j], PRF_R);
+				prgs[j].random_block(tmp, n1);
+				for(int i = 0; i < n1; ++i) {
+					block RR[2];
+					RR[0] = xorBlocks(tmp[i], X0[i]);
+					RR[1] = xorBlocks(tmp[i], X1[i]);
+					if(block_cmp(&RR[0], &R[j*n1+i],1))
+						alice_input[i] = 0;
+					if(block_cmp(&RR[1], &R[j*n1+i],1))
+						alice_input[i] = 1;
 				}
 			}
 		}
