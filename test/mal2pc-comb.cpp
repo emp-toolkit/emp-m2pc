@@ -1,4 +1,3 @@
-#include <emp-tool>
 #include "malicious/malicious.h"
 #include "test/bench_mal2pc.h"
 #include <iomanip>

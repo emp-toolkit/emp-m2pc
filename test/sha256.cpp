@@ -1,4 +1,4 @@
-#include <emp-tool>
+#include <emp-tool/emp-tool.h>
 #include "malicious/malicious.h"
 
 const string circuit_file_location = macro_xstr(EMP_CIRCUIT_PATH);
