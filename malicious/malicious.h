@@ -175,7 +175,7 @@ class Malicious2PC { public:
 		for(int j = 0; j < ssp; ++j) {
 			prgs[j].reseed(&seed[j], PRF_OTHER);
 			prgs[j].random_block(&gc_delta[j], 1);
-			gc_delta[j] = GarbleCircuit::make_delta(gc_delta[j]);
+			gc_delta[j] = make_delta(gc_delta[j]);
 			prgs[j].reseed(&seed[j], PRF_ST);
 			prgs[j].random_bn(s[j], t[j]);
 			eb_mul_fix_norm(C[j], gTbl, s[j]);
@@ -237,7 +237,7 @@ class Malicious2PC { public:
 			if(!E[j]) {
 				prgs[j].reseed(&key[j], PRF_OTHER);
 				prgs[j].random_block(&gc_delta[j], 1);
-				gc_delta[j] = GarbleCircuit::make_delta(gc_delta[j]);
+				gc_delta[j] = make_delta(gc_delta[j]);
 			}
 			io->recv_eb(&C[j], 1);
 			if(!E[j]) {
@@ -298,7 +298,7 @@ class Malicious2PC { public:
 				B_loc[i] = B[i*ssp+j];
 			HalfGateGen<IO, rt> gc(io);
 			gc.set_delta(gc_delta[j]);
-			local_gc = &gc;
+			CircuitExecution::circ_exec = &gc;
 			xortree->circuit(Bp, B_loc);
 			run_function(f, Z, &A[j*n1], Bp);
 
@@ -343,7 +343,7 @@ class Malicious2PC { public:
 				CheckIO checkio(io);
 				HalfGateGen<CheckIO, rt> gc(&checkio);
 				gc.set_delta(gc_delta[j]);
-				local_gc = &gc;
+				CircuitExecution::circ_exec= &gc;
 				xortree->circuit(Bp, B_loc);
 				run_function(f, &Z_bob[j*n3], &A[j*n1], Bp);
 				if(!checkio.get_check_result())
@@ -356,7 +356,7 @@ class Malicious2PC { public:
 			else {
 				HalfGateEva<IO, rt> gc(io);
 				gc.set_file_io(fio);
-				local_gc = &gc;
+				CircuitExecution::circ_exec = &gc;
 
 				run_function(f, Z, tmpA, tmpB);
 
@@ -396,7 +396,7 @@ class Malicious2PC { public:
 			}
 			else {
 				HalfGateEva<MemIO, rt> gc(mio);
-				local_gc = &gc;
+				CircuitExecution::circ_exec = &gc;
 				xortree->circuit(Bp, B_loc);
 				run_function(f, Z, &A[j*n1], Bp);
 				mio->recv_block((block *)T, 4*n3);
@@ -646,7 +646,7 @@ class Malicious2PC { public:
 				B_loc[i] = B[i*ssp+j];
 			HalfGateGen<IO, rt> gc(io);
 			gc.set_delta(gc_delta[j]);
-			local_gc = &gc;
+			CircuitExecution::circ_exec = &gc;
 			xortree->circuit(Bp, B_loc);
 
 			run_function(f, Z, &A[j*n1], Bp);
@@ -692,7 +692,7 @@ class Malicious2PC { public:
 				CheckIO checkio(io);
 				HalfGateGen<CheckIO, rt> gc(&checkio);
 				gc.set_delta(gc_delta[j]);
-				local_gc = &gc;
+				CircuitExecution::circ_exec = &gc;
 				xortree->circuit(Bp, B_loc);
 				run_function(f, &Z_bob[j*n3], &A[j*n1], Bp);
 				if(!checkio.get_check_result())
@@ -704,7 +704,7 @@ class Malicious2PC { public:
 			}
 			else {
 				HalfGateEva<IO,rt> gc(io);
-				local_gc = &gc;
+				CircuitExecution::circ_exec = &gc;
 				xortree->circuit(Bp, B_loc);
 				run_function(f, Z, &A[j*n1], Bp);
 				io->set_key(&key[j]);
