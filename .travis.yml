@@ -51,6 +51,6 @@ before_install:
 addons:
 
 script:
-  - cmake -DCMAKE_BUILD_TYPE=Debug . && make 
+  - cmake -DUSE_RANDOM_DEVICE=ON -DCMAKE_BUILD_TYPE=Debug . && make 
   - ./run ./bin/sha1 12345
   - ./run ./bin/sha256 12345
