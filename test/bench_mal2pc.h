@@ -2,6 +2,7 @@
 #include "malicious/malicious.h"
 #include <string>
 using namespace std;
+using namespace emp;
 
 template<RTCktOpt rt = off>
 double bench_mal2pc_all_online(void * f, uint64_t len1, uint64_t len2, uint64_t len3, NetIO * io, uint64_t TIME, uint64_t party) {

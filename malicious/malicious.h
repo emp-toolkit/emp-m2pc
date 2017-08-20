@@ -3,6 +3,7 @@
 #include <emp-ot/emp-ot.h>
 #include <emp-tool/emp-tool.h>
 
+namespace emp {
 template<typename IO, RTCktOpt rt = RTCktOpt::off>
 class Malicious2PC { public:
 	string GC_FILE = "GC_FILE";
@@ -823,5 +824,6 @@ class Malicious2PC { public:
 		return cheat;
 	}
 };
+}
 #endif// MALICIOUS_H__
 

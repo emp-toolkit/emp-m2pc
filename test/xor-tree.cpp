@@ -1,6 +1,6 @@
 #include <emp-tool/emp-tool.h>
 #include <iostream>
-
+using namespace emp;
 using namespace std;
 
 int main(int argc, char** argv) {
