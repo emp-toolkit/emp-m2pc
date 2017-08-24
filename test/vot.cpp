@@ -3,6 +3,8 @@
 #include <emp-tool/emp-tool.h>
 #include <iostream>
 using namespace std;
+using namespace emp;
+
 
 double test_ot(NetIO * io, int party, int TIME =10) {
 	int length = 40;

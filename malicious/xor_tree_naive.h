@@ -2,6 +2,7 @@
 #define XORTREE_NAIVE_H__
 #include <emp-tool/emp-tool.h>
 
+namespace emp {
 class XorTreeNaive{public:
 	int n, ssp,m;
 	bool **M;
@@ -54,4 +55,5 @@ class XorTreeNaive{public:
 		return n;
 	}
 };
+}
 #endif

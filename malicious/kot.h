@@ -3,6 +3,7 @@
 
 #include <emp-ot/emp-ot.h>
 #include "malicious/vot.h"
+namespace emp {
 class KOT {public:
 	int ssp, l, n;
 	NetIO * io;
@@ -179,4 +180,5 @@ class KOT {public:
 		delete[] com_msg2;
 	}
 };
+}
 #endif// KOT_H__

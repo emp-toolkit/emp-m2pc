@@ -2,6 +2,8 @@
 #define VOT_H__
 
 #include <emp-ot/emp-ot.h>
+
+namespace emp {
 class VOT {public:
 	int ssp;
 	NetIO * io;
@@ -167,4 +169,5 @@ class VOT {public:
 		return true;
 	}
 };
+}
 #endif// VOT_H__

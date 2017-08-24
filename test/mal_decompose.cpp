@@ -1,5 +1,7 @@
 #include <emp-tool/emp-tool.h>
 #include "malicious/malicious.h"
+using namespace emp;
+using namespace std;
 #define AES
 #ifdef AES
 static char file[] = "circuits/files/AES-non-expanded.txt";

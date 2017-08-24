@@ -4,6 +4,10 @@
 #include <emp-tool/emp-tool.h>
 #include <emp-ot/emp-ot.h>
 #include <thread>
+using std::vector;
+using std::future;
+
+namespace emp {
 template<RTCktOpt rt = RTCktOpt::on>
 class Malicious2PC { public:
 	NetIO * io;
@@ -119,8 +123,8 @@ class Malicious2PC { public:
 		baseot_seed1 = new block[baseot_cap];
 		baseot_sel = new bool[baseot_cap];
 
-		int scratch_size = max(2*n2, 3*n3);
-		scratch_size = max(scratch_size, n1);
+		int scratch_size = std::max(2*n2, 3*n3);
+		scratch_size = std::max(scratch_size, n1);
 		scratch = new block*[G];
 		for(int i = 0; i < G; ++i)
 			scratch[i] = new block[scratch_size];
@@ -256,7 +260,7 @@ class Malicious2PC { public:
 	void garbleNhash(char h[20], block seedj, void * f, int j, char * h2) {
 		prgs[j].reseed(&seedj, PRG_GC);
 		prgs[j].random_block(&gc_delta[j], 1);
-		gc_delta[j] = GarbleCircuit::make_delta(gc_delta[j]);
+		gc_delta[j] = make_delta(gc_delta[j]);
 		prgs[j].random_block(&A[j*n1], n1);
 		prgs[j].random_block(scratch[j], n2);
 		for(int i = 0; i < n2; ++i) {
@@ -265,7 +269,7 @@ class Malicious2PC { public:
 		HashIO hashio(io);
 		HalfGateGen<HashIO, rt> gc(&hashio);
 		gc.set_delta(gc_delta[j]);
-		local_gc = &gc;
+		CircuitExecution::circ_exec = &gc;
 		xortree->circuit(scratch[j]+n2, scratch[j]);
 		run_function(f, &Z[j*n3], &A[j*n1], scratch[j]+n2);
 		hashio.get_digest(h);
@@ -521,7 +525,7 @@ class Malicious2PC { public:
 		if (party == ALICE) {
 			HalfGateGen<NetIO, rt> gc(ioes[id]);
 			gc.set_delta(gc_delta[j]);
-			local_gc = &gc;
+			CircuitExecution::circ_exec = &gc;
 			xortree->circuit(Bp, B_loc);
 			run_function(f, &Z[j*n3], &A[j*n1], Bp);
 			ioes[id]->send_block((block *)T[j*n3], 2*n3);
@@ -529,7 +533,7 @@ class Malicious2PC { public:
 			char dgst[20];
 			HashIO hashio(ioes[id]);
 			HalfGateEva<HashIO,rt> gc(&hashio);
-			local_gc = &gc;
+			CircuitExecution::circ_exec = &gc;
 			xortree->circuit(Bp, B_loc);
 			run_function(f, &Z[j*n3], &A[j*n1], Bp);
 
@@ -661,5 +665,6 @@ class Malicious2PC { public:
 		delete[] omega_bool;
 	}
 };
+}
 #endif// MALICIOUS_H__
 

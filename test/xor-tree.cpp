@@ -2,6 +2,7 @@
 #include <iostream>
 
 using namespace std;
+using namespace emp;
 
 int main(int argc, char** argv) {
 	PRG prg;
