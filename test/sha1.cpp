@@ -2,6 +2,7 @@
 #include "malicious/malicious.h"
 using namespace emp;
 using namespace std;
+
 const string circuit_file_location = macro_xstr(EMP_CIRCUIT_PATH);
 static string file = circuit_file_location+"/sha-1.txt";
 static int l1 = 256;
