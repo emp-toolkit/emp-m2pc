@@ -24,7 +24,7 @@ class Malicious2PC { public:
 	block * gc_delta, *Delta_ib, Delta;
 	bool * delta_bool;
 	block * B = nullptr, *A = nullptr,* Z_bob = nullptr, *R = nullptr;
-	char (*T_dgst)[20] = nullptr;
+	char (*T_dgst)[Hash::DIGEST_SIZE] = nullptr;
 	block recovered_delta;
 
 	int PRF_A = 1;
@@ -293,7 +293,7 @@ class Malicious2PC { public:
 
 		block (*T)[4] = new block[n3][4];
 		block tmp[4];
-		char dgst[20];
+		char dgst[Hash::DIGEST_SIZE];
 		for(int j = 0; j < ssp; ++j) {
 			for(int i = 0; i < n2; ++i)
 				B_loc[i] = B[i*ssp+j];
@@ -315,7 +315,7 @@ class Malicious2PC { public:
 			io->send_block_enc((block *)T, 4*n3);
 
 			Hash::hash_once(dgst, T, sizeof(block)*4*n3);
-			io->send_data(dgst, 20);
+			io->send_data(dgst, Hash::DIGEST_SIZE);
 		}
 		delete[] Bp;
 		delete[] B_loc;
@@ -329,8 +329,8 @@ class Malicious2PC { public:
 		block* Z = new block[n3];
 		Z_bob = new block[n3*ssp];
 		bool cheat = false;
-		char dgst[20];
-		T_dgst = new char[ssp][20];
+		char dgst[Hash::DIGEST_SIZE];
+		T_dgst = new char[ssp][Hash::DIGEST_SIZE];
 		block * tmpA = new block[n1];
 		block * tmpB = new block[xortree->input_size()];
 		prg.random_block(tmpA, n1);
@@ -352,7 +352,7 @@ class Malicious2PC { public:
 
 				io->set_key(nullptr);
 				io->recv_block_enc((block*)T, 4*n3);
-				io->recv_data(T_dgst[j], 20);
+				io->recv_data(T_dgst[j], Hash::DIGEST_SIZE);
 			}
 			else {
 				HalfGateEva<IO, rt> gc(io);
@@ -364,8 +364,8 @@ class Malicious2PC { public:
 				io->set_key(&key[j]);
 				io->recv_block_enc((block*)T, 4*n3);
 				Hash::hash_once(dgst, T, sizeof(block)*4*n3);
-				io->recv_data(T_dgst[j], 20);
-				if(strncmp(dgst, T_dgst[j], 20)!=0)
+				io->recv_data(T_dgst[j], Hash::DIGEST_SIZE);
+				if(strncmp(dgst, T_dgst[j], Hash::DIGEST_SIZE)!=0)
 					cheat = true;
 				fio->send_block((block*)T, 4*n3);
 			}
@@ -641,7 +641,7 @@ class Malicious2PC { public:
 
 		block tmp[4];
 		block (*T)[4] = new block[n3][4];
-		char dgst[20];
+		char dgst[Hash::DIGEST_SIZE];
 		for(int j = 0; j < ssp; ++j) {
 			for(int i = 0; i < n2; ++i)
 				B_loc[i] = B[i*ssp+j];
@@ -663,7 +663,7 @@ class Malicious2PC { public:
 			io->send_block_enc((block *)T, 4*n3);
 
 			Hash::hash_once(dgst, T, sizeof(block)*4*n3);
-			io->send_data(dgst, 20);
+			io->send_data(dgst, Hash::DIGEST_SIZE);
 		}
 		delete[] Bp;
 		delete[] B_loc;
@@ -677,14 +677,14 @@ class Malicious2PC { public:
 		block* Z = new block[n3];
 		Z_bob = new block[n3*ssp];
 		bool cheat = false;
-		T_dgst = new char[ssp][20];
+		T_dgst = new char[ssp][Hash::DIGEST_SIZE];
 
 		block (*T)[4] = new block[n3][4];
 
 		bool * tmp_output = new bool[n3];
 		block * recover_delta = new block[n3];
 		block * tmp_delta = new block[n3];
-		char dgst[20];
+		char dgst[Hash::DIGEST_SIZE];
 		bool output_set = false;
 		for(int j = 0; j < ssp; ++j) {
 			for(int i = 0; i < n2; ++i)
@@ -701,7 +701,7 @@ class Malicious2PC { public:
 
 				io->set_key(nullptr);
 				io->recv_block_enc((block*)T, 4*n3);
-				io->recv_data(T_dgst[j], 20);
+				io->recv_data(T_dgst[j], Hash::DIGEST_SIZE);
 			}
 			else {
 				HalfGateEva<IO,rt> gc(io);
@@ -739,8 +739,8 @@ class Malicious2PC { public:
 						}
 				}
 				Hash::hash_once(dgst, T, sizeof(block)*4*n3);
-				io->recv_data(T_dgst[j], 20);
-				if(strncmp(dgst, T_dgst[j], 20)!=0)
+				io->recv_data(T_dgst[j], Hash::DIGEST_SIZE);
+				if(strncmp(dgst, T_dgst[j], Hash::DIGEST_SIZE)!=0)
 					cheat = true;
 			}
 		}
@@ -789,7 +789,7 @@ class Malicious2PC { public:
 		eb_mul_pre(h1Tbl, h1);
 
 		io->recv_block(Delta_ib, n3);
-		char dgst[20];block tmp2[4];
+		char dgst[Hash::DIGEST_SIZE];block tmp2[4];
 		block (*T)[4] = new block[n3][4];
 		for(int j = 0; j < ssp; ++j) {
 			if(!E[j]) {
@@ -812,7 +812,7 @@ class Malicious2PC { public:
 					T[i][3] = xorBlocks(T[i][3], Delta);
 				}
 				Hash::hash_once(dgst, T, sizeof(block)*4*n3);
-				if(strncmp(T_dgst[j], dgst, 20)!=0)
+				if(strncmp(T_dgst[j], dgst, Hash::DIGEST_SIZE)!=0)
 					cheat = true;
 			} else {
 				eb_mul_norm(C[j], C[j], bn_r);
