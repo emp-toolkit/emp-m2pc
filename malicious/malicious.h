@@ -40,7 +40,7 @@ class Malicious2PC { public:
 	bn_t * s, *t;
 	eb_t *C, *D, g1, h1;
 	bn_t bn_r;
-	eb_t g1Tbl[RELIC_EB_TABLE_MAX];
+	eb_t g1Tbl[RLC_EB_TABLE_MAX];
 	Malicious2PC(IO * io, int party, int n1, int _n2, int n3) {
 		initialize_relic();
 		this->n1 = n1;
@@ -154,7 +154,7 @@ class Malicious2PC { public:
 	}
 	void setupAlice() {
 		eb_t h,tmp;
-		eb_t hTbl[RELIC_EB_TABLE_MAX];
+		eb_t hTbl[RLC_EB_TABLE_MAX];
 		io->recv_eb(&h, 1);
 		eb_mul_pre(hTbl, h);
 		prg.random_block(&Delta, 1);
@@ -221,7 +221,7 @@ class Malicious2PC { public:
 		prg.random_bn(w);
 		bn_mod(w,w,q);
 		eb_mul_fix_norm(h, gTbl, w);
-		eb_t hTbl[RELIC_EB_TABLE_MAX];
+		eb_t hTbl[RLC_EB_TABLE_MAX];
 		io->send_eb(&h, 1);
 		eb_mul_pre(hTbl, h);
 		block * bl = new block[ssp+2*ot->l];
@@ -247,7 +247,7 @@ class Malicious2PC { public:
 				eb_mul_fix_norm(C2, gTbl, s[j]);
 				eb_mul_fix_norm(tmp, hTbl, t[j]);
 				eb_add_norm(C2, C2, tmp);
-				if(eb_cmp(C2, C[j])!=CMP_EQ)
+				if(eb_cmp(C2, C[j])!=RLC_EQ)
 					cheat = true;
 			}
 		}
@@ -757,7 +757,7 @@ class Malicious2PC { public:
 
 	void recoverAlice() {
 		eb_t tmp;
-		eb_t h1Tbl[RELIC_EB_TABLE_MAX];
+		eb_t h1Tbl[RLC_EB_TABLE_MAX];
 		io->recv_eb(&h1, 1);
 		io->send_block(&Delta, 1);
 		io->send_block(Delta_ib, n3);
@@ -784,7 +784,7 @@ class Malicious2PC { public:
 		io->recv_block(&Delta, 1);
 		PRG prg_tmp(&Delta);
 		prg_tmp.random_eb(&Delta_eb);
-		eb_t h1Tbl[RELIC_EB_TABLE_MAX];
+		eb_t h1Tbl[RLC_EB_TABLE_MAX];
 		eb_sub_norm(h1,h1,Delta_eb);
 		eb_mul_pre(h1Tbl, h1);
 
