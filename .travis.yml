@@ -3,59 +3,27 @@ language: cpp
 matrix:
   include:
     - os: linux
-      dist: trusty
+      dist: xenial
       sudo: required
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-6
-      env:
-        - TYPE=Debug
-        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
+      env: TYPE=Debug
 
     - os: linux
-      dist: trusty
+      dist: xenial
       sudo: required
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-6
-      env:
+      env: TYPE=Release
+
+    - os: osx
+      sudo: required
+      env: 
         - TYPE=Release
-        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
+        - OPENSSL_ROOT_DIR=/usr/local/opt/openssl/
 
-    - os: linux
-      dist: trusty
+    - os: osx
       sudo: required
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-trusty-3.9
-          packages:
-            - clang-3.9
-      env:
-        - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
-        - TYPE=Release
-
-    - os: linux
-      dist: trusty
-      sudo: required
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-trusty-3.9
-          packages:
-            - clang-3.9
-      env:
-        - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
+      env: 
         - TYPE=Debug
-
-
-
+        - OPENSSL_ROOT_DIR=/usr/local/opt/openssl/
+    
 before_install:
   - eval "${MATRIX_EVAL}"
   - git clone -bv0.1 https://github.com/emp-toolkit/emp-readme.git
@@ -64,9 +32,8 @@ before_install:
   - bash ./emp-readme/scripts/install_emp-tool.sh
   - bash ./emp-readme/scripts/install_emp-ot.sh
 
-addons:
-
 script:
-  - cmake -DCMAKE_BUILD_TYPE=Debug . && make 
+  - cat /proc/cpuinfo || true
+  - cmake -DCMAKE_BUILD_TYPE=$TYPE . && make
   - ./run ./bin/sha1 12345
   - ./run ./bin/sha256 12345
