@@ -1,4 +1,11 @@
 # EMP-m2pc[![Build Status](https://travis-ci.org/emp-toolkit/emp-m2pc.svg?branch=master)](https://travis-ci.org/emp-toolkit/emp-m2pc)
+
+> **Archived.** This repository is no longer maintained and receives no fixes,
+> including security fixes, and it does not build against current emp-tool and
+> emp-ot. For actively secure two-party computation, use
+> **[emp-ag](https://github.com/emp-toolkit/emp-ag)**, where two-party computation
+> is `AGMPCSession<2>`.
+
 <img src="https://raw.githubusercontent.com/emp-toolkit/emp-readme/master/art/logo-full.jpg" width=300px/>
 
 ## Faster Secure Two-Party Computation in the Single-Execution Setting
